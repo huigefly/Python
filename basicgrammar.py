@@ -21,3 +21,20 @@ v3=v1+v2+200
 msg="shenme " + str(v3) + " again!"
 print("v3:", v3)
 print("msg:", msg)
+
+#列表
+print("---list")
+bicycles = ['trek', 'cannondale', 'redline', 'specialized']
+print(bicycles[-1].title())
+#add
+bicycles.append('hello')
+bicycles.append('hello')
+bicycles.insert(1, 'world')
+#delete by index
+del bicycles[0]
+bicycles.pop(2)
+#delete by value
+rtn = bicycles.remove('helloa')
+print ('rtn:', rtn)
+for bic in bicycles:
+    print (bic)
