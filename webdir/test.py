@@ -18,4 +18,4 @@ def btn2():
     rtn=os.popen('ls -l').read()
     return rtn
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')
