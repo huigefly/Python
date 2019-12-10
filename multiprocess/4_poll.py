@@ -28,6 +28,7 @@ def call2():
     with futures.ProcessPoolExecutor(300) as pool:
         for i in ['hello', 'world', 'what']:
             r = pool.submit(handle, i)
-            r.add_done_callback(return_cb)
+            # r.result()      # block , wait proc return
+            r.add_done_callback(return_cb)    # wait proc ok, callback 
 if __name__ == '__main__':
     call2()
