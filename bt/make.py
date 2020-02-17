@@ -14,6 +14,7 @@ g_handle_queue = Queue()
 ses = lt.session()
 ses.listen_on(6888, 6888 + 300)
 ses.set_alert_mask(lt.alert.category_t.tracker_notification)
+g_handle = None
 
 def func(piece_index):
     sys.stderr.write('.')
@@ -24,17 +25,20 @@ def make_torrent(file, tracker, save_dir):
     print("save:%s" % save_dir)
     print('version:%s' % lt.version)
 
-    fs = lt.file_storage()
-    lt.add_files(fs, file)
+    fs = lt.file_storage()      # get file storage obj
+    lt.add_files(fs, file)      # add files to file storage
     print("fs files:%d" % fs.num_files())
-    if fs.num_files() == 0:
+    if fs.num_files() == 0:     # check 
         os._exit(0)
-    t = lt.create_torrent(fs, PIECE_SIZE, PAD_FILE_SIZE)
+    t = lt.create_torrent(fs, PIECE_SIZE, PAD_FILE_SIZE)   
     print("picesize:%s" % t.piece_size(0))
     t.add_tracker(tracker)
-    t.set_creator('libtorrent %s' % lt.version)
+    t.set_creator('libtorrent %s' % lt.version)  # optional. 
+
+    # real start create torrent
     lt.set_piece_hashes(t, os.path.dirname(file), func) # base file in this directory, fun callback
 
+    # write to torrent file
     basename = os.path.basename(file)
     torrent_name = os.path.join(save_dir, basename + ".torrent")
     print("torrent:%s" % torrent_name)
@@ -43,32 +47,63 @@ def make_torrent(file, tracker, save_dir):
     f.close()
 
 
-def share_torrent(torrent, save_dir, name):
-    t_state = ['queued', 'checking', 'downloading metadata', \
+def handle_alert(alert):
+    alert_type = alert.what()
+    if alert_type == "torrent_finished_alert":
+        print("msg:", alert.message())
+        # handle = alert.handle
+        # create fast resume
+        # if handle.is_valid() and handle.has_metadata():
+        #     data = lt.bencode(handle.write_resume_data())
+        #     temp = "/opt/work/code/Python/bt/temp/" + alert.handle.name() + '.fastresume'
+        #     open(temp, 'wb').write(data)
+        return 1
+    elif alert_type == "state_update_alert":
+        # alert.handle.save_resume_data()
+        t_state = ['queued', 'checking', 'downloading metadata', \
             'downloading', 'finished', 'seeding', \
             'allocating', 'checking fastresume']
+        if len(alert.status) > 0:
+            s = alert.status[0]
+            print("state:%s" % t_state[s.state])
+            print("download load:%dkb/s" % (s.download_payload_rate / 1000))
+            print("progress:%f" % (s.progress_ppm / 10000))
+    elif alert_type == "save_resume_data_alert":
+        # print("msg:", alert.message())
+        # print("save_resume_data_alert:", alert.handle.name())
+        temp = "/opt/work/code/Python/bt/temp/" + alert.handle.name() + '.fastresume'
+        with open(temp, 'wb+') as f:
+            data = lt.bencode(alert.handle.write_resume_data())
+            f.write(data)
+    elif alert_type == "save_resume_data_failed_alert":
+        print("msg:", alert.message())
+    # else:
+    #     print("alert_type:", alert_type)
 
+
+def share_torrent(torrent, save_dir, name):
     settings = lt.session_settings()
     settings.user_agent = 'python_client/' + lt.version
     settings.ignore_limits_on_local_network = False
     settings.disable_hash_checks = True
     
     ses.set_settings(settings)
-    # ses.set_alert_mask(0xfffffff)
-    ses.set_alert_mask(lt.alert.category_t.status_notification)
+    ses.set_alert_mask(0xfffffff)
+    # ses.set_alert_mask(lt.alert.category_t.status_notification | lt.alert.category_t.storage_notification)
     
     atp = {}
     atp["save_path"] = save_dir
-    # atp["storage_mode"] = lt.storage_mode_t.storage_mode_sparse
-    atp["storage_mode"] = lt.storage_mode_t.storage_mode_compact
+    atp["storage_mode"] = lt.storage_mode_t.storage_mode_sparse
+    # atp["storage_mode"] = lt.storage_mode_t.storage_mode_compact
     # atp["storage_mode"] = lt.storage_mode_t.storage_mode_allocate
     atp["paused"] = False
     atp["auto_managed"] = True
     atp["duplicate_is_error"] = True
     # atp["flags"] = lt.add_torrent_params_flags_t.flag_seed_mode
     atp["name"] = "helloworld_%d" % threading.currentThread().ident
-    temp = "/opt/work/code/Python/bt/" + name + '.fastresume'
+    temp = "/opt/work/code/Python/bt/temp/" + name + '.fastresume'
     if os.path.exists(temp):
+        print("read torrent", temp)
         atp["resume_data"] = open(temp, 'rb').read()
     info = None
     try:
@@ -86,48 +121,30 @@ def share_torrent(torrent, save_dir, name):
     handle.set_max_connections(60)
     handle.set_max_uploads(-1)
     handle.set_download_limit(-1)
-    handle.set_upload_limit(-1)
+    handle.set_upload_limit(200000)
     g_handle_queue.put(handle)
 
     alive = True
     while alive:
-        ### old way
-        # s = handle.status()
-        # print ("tid:", threading.currentThread().ident, t_state[s.state], handle.name())
-        # if s.state == lt.torrent_status.seeding or s.state == lt.torrent_status.finished:
-        #     print("torrent seeding")
-        #     handle.save_resume_data()
-        #     break
-        # handle.save_resume_data()
-        
         alerts = []
         while 1:
             a = ses.pop_alert()
-            if not a: break
+            if not a: 
+                break
             alerts.append(a)
 
-        print("alert:", len(alerts))
+        # print("alert:", len(alerts))
         for a in alerts:
-            # if a.category() == lt.alert.category_t.status_notification:
-            #     print(a.message() + '\n')
-            if a.what() == "torrent_finished_alert":
-                print("msg:", a.message())
+            rtn = handle_alert(a)
+            if rtn == 1:
                 alive = False
                 break
-
-            # if a.what() == lt.torrent_added_alert.what():
-            #     print(a.message() + '\n')
-            # if type(a) == str:
-            #     print(a + '\n')
-            # else:
-            #     print(a.message() + '\n')
-
-        time.sleep(1)
-
-    # create fast resume
-    # if handle.is_valid() and handle.has_metadata():
-    #         data = lt.bencode(handle.write_resume_data())
-    #         open(os.path.join(save_dir, handle.get_torrent_info().name() + '.fastresume'), 'wb').write(data)
+        ses.post_torrent_updates()
+        if handle and handle.need_save_resume_data():
+            print("-- handle save resume data")
+            handle.save_resume_data()
+        time.sleep(0.2)
+    
 
 def download_proc(p):
     
@@ -145,7 +162,7 @@ if "__main__" == __name__:
         # share_torrent(sys.argv[2], sys.argv[3])
         params1 = []
         info = {}
-        info["torrent"] = "/opt/work/code/Python/bt/seed/1.mp4.torrent"
+        info["torrent"] = "/opt/work/code/Python/bt/seed/3.mp4.torrent"
         info["save"] = sys.argv[2]
         info["name"] = "1.mp4"
         params1.append(info)
@@ -157,17 +174,16 @@ if "__main__" == __name__:
         info["name"] = "2.mp4"
         params2.append(info)
 
-
         t1 = threading.Thread(target=download_proc, args=(params1, ))
-        t2 = threading.Thread(target=download_proc, args=(params2, ))
+        # t2 = threading.Thread(target=download_proc, args=(params2, ))
 
         t1.start()
-        t2.start()
+        # t2.start()
 
         t1.join()
-        t2.join()
+        # t2.join()
 
         print("handle queue:", g_handle_queue.qsize())
 
-
+        # time.sleep(100000)
     

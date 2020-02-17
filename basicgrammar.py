@@ -18,6 +18,14 @@ if options.pdcl==True:
 if options.zdcl==True:
     print 'zdcl is true'
 
+class a:
+    al = []
+    def __init__(self):
+        self._nl = "helloworld"
+        self.__sl = "nihaoshijie"
+
+s = a()
+print(s._nl)
 
 os._exit(0)
 
