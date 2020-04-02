@@ -1,4 +1,140 @@
+# -*- coding: utf-8 -*-
 import os
+import json
+from collections import namedtuple as _namedtuple
+
+
+o=object(state="nihao")
+print(o)
+print(o.state)
+
+
+'''
+v=1
+a=2
+b=3
+if v == 2 or (a == 2 and b == 3):
+    print("ok")
+os._exit(0)
+
+state = {'00000000-0000-0000-0000-000000000001': {'621dc693-73f4-4338-9e50-1dc118d21c7e': {'state': 'HEALTH', 'timestamp': 1582874215}}}
+print(state["00000000-0000-0000-0000-000000000001"])
+if "00000000-0000-0000-0000-000000000001" in state:
+    print("have in ")
+else:
+    print("no in")
+
+os._exit(0)
+
+
+
+
+
+
+
+_DISK_STATES = ['HEALTH', 'TROUBLE', 'UNKNOWN']
+_DISK_STATE_ENUM = _namedtuple('_DiskStateEnum', _DISK_STATES)
+DISK_STATE = _DISK_STATE_ENUM(*_DISK_STATES)
+print (DISK_STATE)
+print(DISK_STATE.HEALTH)
+print
+
+
+s = {"nodeid": {"disk_sn1": {"state": "state1", "timestamp": 123}, "disk_sn2": {"state": "state2", "timestamp": 456},}}
+for i in s["nodeid"]:
+    print(i)
+
+print
+
+ctt = "{ \
+    \"host_id\": \"3984d05e-4da7-4731-8ef6-65afc1b24181\", \
+    \"timestamp\": 1234567890123, \
+    \"disk_list\": [\
+    {\
+         \"disk_sn\":\"BTWL3303032C160MGN\",\
+         \"name\": \"sda\",\
+         \"state\": \"HEALTH\",\
+         \"wear_leveling_count\":{\
+             \"value\":99,\
+             \"worst\":99,\
+             \"threshold\":0\
+          },\
+          \"media_wearout_indicator\": None\
+    }\
+]\
+}"
+print(json.dumps(ctt))
+print
+print
+
+_states = {
+    "1234d05e-4da7-4731-8ef6-65afc1b24181":
+    {
+         "3984d05e-4da7-4731-8ef6-65afc1b24181":
+         {
+             "state": "HEALTH",
+             "timestamp": 1234567890123,
+         },
+    }
+}
+
+print(len(_states))
+
+b = "bb"
+a = "aa"
+l = {}
+if a in l and a in l["aa"]:
+    print "gdo"
+else:
+    print "bad"
+
+#a = {"nihaoshijie":{"state":"good", "time":11024}}
+#sta={}
+#sta.update(a)
+#print(sta)
+#a = {"nihaoshijie":{"state":"bad", "time":11024}}
+#sta.update(a)
+##print(sta)
+#a = {"helloaaaaa":{"state":"gsood", "time":11024}}
+#sta.update(a)
+#print(sta)
+
+##print
+#print
+info = {"helloworld":{"nihaoshijie":{"state":"good", "time":11024}}}
+st={}
+st.update(info)
+print(st)
+info = {"helloworld":{"what":{"state":"bad", "time":1221024}}}
+st["helloworld"].update(info["helloworld"])
+print(st)
+info = {"helloworld":{"what":{"state":"sssbad", "time":1221024}}}
+st["helloworld"].update(info["helloworld"])
+print(st)
+
+for i in st["helloworld"]:
+    st["helloworld"][i]["state"] = "shenemdongxia"
+print(st)
+
+print 
+print
+#info = {"shenme":{"keyi":{"state":"bad", "time":1221024}}}
+#st.update(info)
+#print(st)
+
+class a0221:
+    def __init__(self, name):
+        self.name = name
+
+    def __getattr__(self, item, section=None):
+        print('getattr:', item)
+        print('section:', section)
+        return item
+
+a = a0221('hello')
+print(a.name)
+print(a.what)
+print(a.hellworold('good'))
 
 from optparse import OptionParser
 parser = OptionParser()
@@ -89,7 +225,7 @@ print ("d")
 d = unit()
 
 
-#变量
+# 变量
 print("---value")
 value=100
 print("value:", value)
@@ -129,4 +265,4 @@ rtn = bicycles.remove('hello')
 print ('rtn:', rtn)
 for bic in bicycles:
     print (bic)
-
+'''
