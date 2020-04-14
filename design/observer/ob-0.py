@@ -14,7 +14,7 @@ class win_main:
         def progress(_class):
             for i in range(9999999999999):
                 print("win main is running......")
-                 #if is_visible
+                #if is_visible & value change
                 self.update(_class.value)
                 time.sleep(1)
         # ...
@@ -23,8 +23,9 @@ class win_main:
 
 class bt:
 
-    def __init__(self, win):
-        self.win = win
+    def __init__(self):
+        self.win = win_main()
+        self.win.run()
 
     def run(self):
         # ....
@@ -35,8 +36,6 @@ class bt:
         # ....
 
 if __name__ == "__main__":
-    w_main = win_main()
-    w_main.run()
-    bt(w_main).run()
+    bt().run()
 
     time.sleep(2)

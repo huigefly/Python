@@ -4,9 +4,10 @@ import json
 from collections import namedtuple as _namedtuple
 
 
-o=object(state="nihao")
-print(o)
-print(o.state)
+a=1
+def aa(s):
+	return 1 if s == 1 else 0
+print aa(0)
 
 
 '''

@@ -1,0 +1,23 @@
+....
+
+int efd = epoll_create(1024)
+int sfd = socket()
+
+event = {
+    data: void *.  // 1,callback_func, 2,other
+    event: in, 
+}
+epoll_ctl(add, sfd1, event)
+epoll_ctl(add, sfd2, event)
+
+while(1){
+    events
+    ret = epoll_wait()
+
+    for (i, i<ret,i++ )
+        if events[i].event == in
+            ...
+        else if events[i].event == out
+            ...
+        else if events[i].event == err
+}
