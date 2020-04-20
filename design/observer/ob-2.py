@@ -12,15 +12,6 @@ class win_main:
     def update(self, value):
         print("win_main get: %d" % value)
 
-    def run(self):
-        def progress(_class):
-            for i in range(9999999999999):
-                print("win_main is running....")
-                time.sleep(100)
-        # ...
-        _thread.start_new_thread(progress, (self, ))
-        # ...
-
 class win_top:
     value = 0
 
@@ -31,15 +22,6 @@ class win_top:
 
     def update(self, value):
         print("win_top get: %d" % value)
-
-    def run(self):
-        def progress(_class):
-            for i in range(9999999999999):
-                print("win_top is running...")
-                time.sleep(100)
-        # ...
-        _thread.start_new_thread(progress, (self, ))
-        # ...
 
 class bt:
 
