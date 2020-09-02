@@ -1,0 +1,3 @@
+HOST = ''
+PORT = 21566
+ADDR = (HOST, PORT)
