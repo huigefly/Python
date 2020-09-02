@@ -1,0 +1,12 @@
+1、环境安装
+    pip2 install thrift
+    apt install thrift-compiler
+2、编写xxx.thrift文件，定义接口
+3、thrift -gen py test.thrift
+4、将生产的文件夹拷贝到项目目录
+5、编写server，起服务供客户端调用。确定端口和接口
+    需要运行起 server.py
+6、xxx-remote 提供本地调用
+7、可以写脚本，远程调用
+
+./Transmit-remote -h 127.0.0.1:9090 sayMsg "hello" "1"
