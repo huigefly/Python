@@ -13,10 +13,12 @@ class MsgTransfer(StreamRequestHandler):
 
         while True:
             try:
+                # data : xml; json; define format; so on
                 data = self.request.recv(1024).strip()
                 if not data: break
                 print("recv from client:%s" % data)
                 # think param input
+                # do not block msg 
                 obj = MsgHandleFactory.get(data)
                 obj.run()
                 obj.response()
