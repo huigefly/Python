@@ -11,7 +11,7 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 
-transport = TSocket.TSocket('127.0.0.1', 8000)
+transport = TSocket.TSocket('127.0.0.1', 9090)
 transport = TTransport.TBufferedTransport(transport)
 protocol = TBinaryProtocol.TBinaryProtocol(transport)
 client = Transmit.Client(protocol)
@@ -24,7 +24,7 @@ data = json.dumps({"name":"zhoujielun"})
 msg = client.invoke(cmd,token,data)
 print(msg)
 
-#client.sayMsg('shenmedongxi', 'hello')
-client.sayMsg('shenmedongxi')
+client.sayMsg('shenmedongxi', 'hello')
+# client.sayMsg('shenmedongxi')
 
 transport.close()

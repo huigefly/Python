@@ -31,7 +31,7 @@ class TransmitHandler:
 if __name__=="__main__":
     handler = TransmitHandler()
     processor = Transmit.Processor(handler)
-    transport = TSocket.TServerSocket('127.0.0.1', 8000)
+    transport = TSocket.TServerSocket('127.0.0.1', 9090)
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
     server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
