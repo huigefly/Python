@@ -14,12 +14,14 @@ class MsgTransfer(StreamRequestHandler):
         while True:
             try:
                 # data : xml; json; define format; so on
-                data = self.request.recv(1024).strip()
+                data = self.request.recv(BUF_SIZE).strip()
                 if not data: break
                 print("recv from client:%s" % data)
                 # think param input
                 # do not block msg 
-                obj = MsgHandleFactory.get(data)
+                msg_tyep = data.split('#')
+                obj = MsgHandleFactory.get(msg_tyep[0])
+                obj.init(data)
                 obj.run()
                 obj.response()
                 self.request.sendall(data.upper())
@@ -28,6 +30,9 @@ class MsgTransfer(StreamRequestHandler):
                 break
 
 if __name__ == "__main__":
+
+    
+
     TCPServer.allow_reuse_address = True
     # tcpSerSock = ThreadingTCPServer(ADDR, MsgTransfer)
     tcpSerSock = ForkingTCPServer(ADDR, MsgTransfer)

@@ -1,5 +1,6 @@
 HOST = ''
 PORT = 21566
+BUF_SIZE = 1024
 ADDR = (HOST, PORT)
 
 class MSG_TYPE:
