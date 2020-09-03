@@ -27,26 +27,19 @@ class Singleton(type):
             self._instance = super(Singleton, self).__call__(*args, **kwargs)
         return self._instance
     
-def make_torrent(mylist):
+def make_torrent():
     print("globa make torrent")
-    print(mylist) 
-
+    time.sleep(5)
+    
 class MakeTorrent():
     # __metaclass__ = Singleton #py2 ok, py3 no
     def __init__(self, process_num=1):
         print("init create process pool")
-        # global mylist
-        with multiprocessing.Manager() as MG:
-            self.mylist=MG.list(range(5))
-            self.mylist.append("nihao")
     
     def run(self):
         print("run make task a")
-        p=multiprocessing.Process(target=make_torrent, 
-                                    args=(self.mylist))  
+        p=multiprocessing.Process(target=make_torrent)  
         p.start()
-
-        print(mylist)  
 
     
 if __name__ == '__main__':

@@ -19,8 +19,10 @@ class MsgTransfer(StreamRequestHandler):
                 print("recv from client:%s" % data)
                 # think param input
                 # do not block msg 
-                msg_tyep = data.split('#')
-                obj = MsgHandleFactory.get(msg_tyep[0])
+                # make_torrent#/tmp#/tmp/#http://127.0.0.1
+                msg_type = data.split('#')
+                obj = MsgHandleFactory.get(msg_type[0])
+                print obj
                 obj.init(data)
                 obj.run()
                 obj.response()
@@ -34,7 +36,7 @@ if __name__ == "__main__":
     
 
     TCPServer.allow_reuse_address = True
-    # tcpSerSock = ThreadingTCPServer(ADDR, MsgTransfer)
-    tcpSerSock = ForkingTCPServer(ADDR, MsgTransfer)
+    tcpSerSock = ThreadingTCPServer(ADDR, MsgTransfer)
+    # tcpSerSock = ForkingTCPServer(ADDR, MsgTransfer)
     print 'waiting for connection...'
     tcpSerSock.serve_forever()
